@@ -5,8 +5,8 @@ CREATE DATABASE expenses_vs_budget
 WITH ENCODING = 'UTF8';
 
 
-CREATE USER ${PG_USER}  WITH ENCRYPTED PASSWORD '${PG_PASSWORD}';
-GRANT ALL PRIVILEGES ON DATABASE expenses_vs_budget TO budget_user;
+CREATE USER %{PGUSER}  WITH ENCRYPTED PASSWORD '%{PGPASSWORD}';
+GRANT ALL PRIVILEGES ON DATABASE expenses_vs_budget TO %{PGUSER};
 
 
 \c expenses_vs_budget
@@ -27,3 +27,7 @@ GRANT ALL PRIVILEGES ON TABLE expenses TO budget_user;
 
 GRANT USAGE, SELECT ON SEQUENCE expenses_expense_id_seq TO budget_user;
 GRANT UPDATE ON SEQUENCE expenses_expense_id_seq TO budget_user;
+
+
+
+
