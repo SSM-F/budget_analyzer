@@ -53,8 +53,6 @@ def test_populate_db_contain_all_columns(clean_table):
     assert (['amount'] in col for col in columns_result)
     assert (['category'] in col for col in columns_result)
 
-
-
 def test_populate_db_raise_exception():
     test_table_name = 'expenses'
     with pytest.raises(Exception) as e:
@@ -71,8 +69,6 @@ def test_populate_db_logging_info(mock_close, mock_db_conn, caplog):
 
     test_file = 'data/example_invoice.csv'
     test_table_name = 'expenses'
-
-    
 
     with caplog.at_level(logging.INFO):
         populate_db(csv_file_path=test_file, table_name=test_table_name)

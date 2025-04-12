@@ -27,6 +27,7 @@ GRANT ALL PRIVILEGES ON TABLE expenses TO budget_user;
 
 GRANT USAGE, SELECT ON SEQUENCE expenses_expense_id_seq TO budget_user;
 GRANT UPDATE ON SEQUENCE expenses_expense_id_seq TO budget_user;
+ALTER SEQUENCE expenses_expense_id_seq OWNED BY budget_user;
 
 
 
