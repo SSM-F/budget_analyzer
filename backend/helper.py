@@ -19,9 +19,9 @@ def return_data(file_path):
         if file_path.endswith('json'):
             data = read_json(file_path)
 
-        query = """SELECT date,description,amount,category FROM expenses
-                    WHERE date=:date AND description=:description 
-                    AND amount=:amount AND category=:category;
+        query = """SELECT id,date,description,amount,category FROM expenses
+                    WHERE id=:id AND description=:description 
+                    AND amount=:amount AND category=:category AND date=:date;
                     """
         conn= db_connection()
 
@@ -30,6 +30,7 @@ def return_data(file_path):
         data_result = []
         for row in rows:
             x = conn.run(query,
+                     id=row['id'],
                      date=row['Date'],
                      description=row['Description'],
                      amount=row['Amount'],

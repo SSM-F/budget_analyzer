@@ -1,11 +1,11 @@
-Date,Description,Amount,Category
-2025-03-01,Starbucks Coffee,-4.50,Coffee
-2025-03-02,Amazon Purchase,-49.99,Shopping
-2025-03-03,Uber Ride,-15.75,Transport
-2025-03-05,Salary,+2500.00,Income
-2025-03-06,Netflix Subscription,-12.99,Entertainment
-2025-03-07,Grocery Store,-76.20,Groceries
-2025-03-09,Spotify,-9.99,Entertainment
-2025-03-10,Electricity Bill,-89.30,Utilities
-2025-03-12,Gas Station,-40.00,Transport
-2025-03-15,Dinner at Italian Bistro,-67.00,Food
+id,Date,Description,Amount,Category
+1,2025-03-01,Starbucks Coffee,-4.50,Coffee
+2,2025-03-02,Amazon Purchase,-49.99,Shopping
+3,2025-03-03,Uber Ride,-15.75,Transport
+4,2025-03-05,Salary,+2500.00,Income
+5,2025-03-06,Netflix Subscription,-12.99,Entertainment
+6,2025-03-07,Grocery Store,-76.20,Groceries
+7,2025-03-09,Spotify,-9.99,Entertainment
+8,2025-03-10,Electricity Bill,-89.30,Utilities
+9,2025-03-12,Gas Station,-40.00,Transport
+10,2025-03-15,Dinner at Italian Bistro,-67.00,Food

@@ -10,6 +10,7 @@ def test_read_json_reads_and_parse_file():
                                           'Category': 'Holiday',
                                           'Date': '2025-07-15',
                                           'Description': 'Airbnb - Barcelona trip',
+                                          'id': 101
                                            }
     
 def test_read_json_raise_exception_if_wrong_file_format_passed():

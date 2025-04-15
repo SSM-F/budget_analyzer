@@ -13,6 +13,7 @@ GRANT ALL PRIVILEGES ON DATABASE expenses_vs_budget TO %{PGUSER};
 
 CREATE TABLE expenses(
     expense_id SERIAL PRIMARY KEY,
+    id INTEGER,
     date DATE NOT NULL,
     description TEXT,
     amount NUMERIC(10,2) NOT NULL,

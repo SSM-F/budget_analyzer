@@ -72,11 +72,13 @@ class TestPut:
                          [{'amount': -109.99,
                         'category': 'Shopping',
                         'date': '2025-03-18',
-                        'description': 'Waterstone'},
+                        'description': 'Waterstone',
+                        'id': 14},
                        {'amount': -302.78,
                         'category': 'Shopping',
                         'date': '2024-02-19',
-                        'description': 'IKEA'}]}
+                        'description': 'IKEA',
+                        'id': 17}]}
     
         assert response_decoded == expected_items
 
@@ -91,15 +93,19 @@ class TestPut:
                        {'amount': -350.0,
                         'category': 'Holiday',
                         'date': '2025-07-15',
-                        'description': 'Airbnb - Barcelona trip'},
+                        'description': 'Airbnb - Barcelona trip',
+                        'id': 101},
                        {'amount': -180.75,
                         'category': 'Holiday',
                         'date': '2025-07-16',
-                        'description': 'Flight to Barcelona'},
+                        'description': 'Flight to Barcelona',
+                        'id': 102},
                        {'amount': -25.0,
                         'category': 'Holiday',
                         'date': '2025-07-18',
-                        'description': 'Sagrada Familia tickets'}]}
+                        'description': 'Sagrada Familia tickets',
+                        'id': 103
+                        }]}
         assert expected == response_decoded
 
     

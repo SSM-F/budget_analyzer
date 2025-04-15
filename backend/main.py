@@ -49,10 +49,11 @@ def put_new_expense(file_path : UploadFile = File(...),table_name: str = Query(.
         
         for data in data_inserted:
             base = {
-                    'date': data[0],
-                    'description': data[1],
-                    'amount': data[2],
-                    'category': data[3]}
+                    'id': data[0],
+                    'date': data[1],
+                    'description': data[2],
+                    'amount': data[3],
+                    'category': data[4]}
             result['New_invoice_added'].append(base)
         
             
@@ -63,3 +64,6 @@ def put_new_expense(file_path : UploadFile = File(...),table_name: str = Query(.
     finally:
         if conn is not None:
             close_conn(conn)
+
+
+#@app.delete('api/expenses/delete')

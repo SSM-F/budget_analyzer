@@ -1,0 +1,23 @@
+[
+    {
+      "id":101,
+      "Date": "2025-07-15",
+      "Description": "Airbnb - Barcelona trip",
+      "Amount": -350.00,
+      "Category": "Holiday"
+    },
+    {
+      "id":102,
+      "Date": "2025-07-16",
+      "Description": "Flight to Barcelona",
+      "Amount": -180.75,
+      "Category": "Holiday"
+    },
+    {
+      "id":103,
+      "Date": "2025-07-18",
+      "Description": "Sagrada Familia tickets",
+      "Amount": -25.00,
+      "Category": "Holiday"
+    }
+  ]

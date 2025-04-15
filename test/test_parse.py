@@ -27,7 +27,7 @@ class TestCsv:
         test_table_name = 'expenses'
 
         response = populate_db(file_path=test_file, table_name=test_table_name)
-
+        pprint(response)
 
         assert 'Starbucks Coffee' in response[0]
         assert -4.50 in response[0]
