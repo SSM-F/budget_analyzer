@@ -27,23 +27,27 @@ def get_expenses_info():
             close_conn(conn)
 
 @app.put('/api/expenses/upload', status_code= 201)
-def put_new_expense(path_to_csv : UploadFile = File(...),table_name: str = Query(...)):
+def put_new_expense(file_path : UploadFile = File(...),table_name: str = Query(...)):
     conn=None
-    temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'csv')
+    temp = None
     
     try:
         conn= db_connection()
+        if file_path.filename.endswith('csv'):
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'csv')
+        if file_path.filename.endswith('json'):
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'json')
         
         with temp as t:
-            shutil.copyfileobj(path_to_csv.file, t)
+            shutil.copyfileobj(file_path.file, t)
             t_path = t.name
-        new_data = populate_db(csv_file_path=t_path,table_name=table_name)
+        new_data = populate_db(file_path=t_path,table_name=table_name)
         
         
-        y=return_data(t_path)
+        data_inserted=return_data(t_path)
         result = {'New_invoice_added': []}
         
-        for data in y:
+        for data in data_inserted:
             base = {
                     'date': data[0],
                     'description': data[1],

@@ -1,5 +1,7 @@
 from backend.db_conn import db_connection, close_conn
-from backend.read_csv import read_csv
+from backend.file_readers.read_csv import read_csv
+from backend.file_readers.read_json import read_json
+from fastapi import File,UploadFile
 
 def formated_data(columns,raw_data):
     formated_result = []
@@ -9,12 +11,18 @@ def formated_data(columns,raw_data):
     return formated_result
 
 def return_data(file_path):
+    data = None
+    if file_path.endswith('csv'):
+        data = read_csv(file_path)
+    if file_path.endswith('json'):
+        data = read_json(file_path)
+
     query = """SELECT date,description,amount,category FROM expenses
                 WHERE date=:date AND description=:description 
                 AND amount=:amount AND category=:category;
                 """
     conn= db_connection()
-    data = read_csv(file_path)
+    
     rows = data['Invoice_Data']
 
     data_result = []
