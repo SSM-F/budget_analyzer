@@ -1,11 +1,13 @@
-from fastapi import FastAPI, UploadFile, File, Query
+from fastapi import FastAPI, UploadFile, File, Query, HTTPException
+from pg8000.exceptions import DatabaseError
 from backend.db_conn import db_connection,close_conn
 from typing import Union
-from backend.helper import formated_data
+from backend.helper import formated_data, return_data
 from backend.parse import populate_db
 import tempfile
 import shutil
 from pprint import pprint
+
 
 
 app = FastAPI()
@@ -28,24 +30,32 @@ def get_expenses_info():
 def put_new_expense(path_to_csv : UploadFile = File(...),table_name: str = Query(...)):
     conn=None
     temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'csv')
+    
     try:
         conn= db_connection()
+        
         with temp as t:
             shutil.copyfileobj(path_to_csv.file, t)
             t_path = t.name
         new_data = populate_db(csv_file_path=t_path,table_name=table_name)
         
-        for data in new_data:
+        
+        y=return_data(t_path)
+        result = {'New_invoice_added': []}
+        
+        for data in y:
+            base = {
+                    'date': data[0],
+                    'description': data[1],
+                    'amount': data[2],
+                    'category': data[3]}
+            result['New_invoice_added'].append(base)
+        
             
-            return {'New_invoice_added': [{
-                'expense_id': data[0],
-                'date': data[1],
-                'description': data[2],
-                'amount': data[3],
-                'category': data[4],
-                'created_at': data[5]
-            }]}
-   
+        return result
+    except DatabaseError:
+        raise HTTPException(status_code=404,
+                            detail='Invoice already added or wrong format')
     finally:
         if conn is not None:
             close_conn(conn)
