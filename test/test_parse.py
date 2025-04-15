@@ -15,9 +15,7 @@ def clean_table():
          conn.run(f"""
                  TRUNCATE expenses;
                 """)
-         conn.run(f"""
-                 DELETE FROM expenses;
-                """)
+         
          yield conn
     finally:
         close_conn(conn)
@@ -27,16 +25,15 @@ def test_populate_db_succesfully_populate_table(clean_table):
     test_file = 'data/example_invoice.csv'
     test_table_name = 'expenses'
 
-    populate_db(csv_file_path=test_file, table_name=test_table_name)
-
-    rows = clean_table.run(f"SELECT * FROM {test_table_name}")
-
-    assert 'Starbucks Coffee' in rows[0]
-    assert -4.50 in rows[0]
-    assert 'Coffee' in rows[0]
-    assert datetime.date(2025, 3, 1) in rows[0]
+    response = populate_db(csv_file_path=test_file, table_name=test_table_name)
     
-    assert len(rows) == 10
+    
+    assert 'Starbucks Coffee' in response[0]
+    assert -4.50 in response[0]
+    assert 'Coffee' in response[0]
+    assert datetime.date(2025, 3, 1) in response[0]
+    
+    assert len(response) == 10
     
     
 
@@ -53,11 +50,21 @@ def test_populate_db_contain_all_columns(clean_table):
     assert (['amount'] in col for col in columns_result)
     assert (['category'] in col for col in columns_result)
 
+def test_parse_db_reads_all_content_of_file_and_adds_it_to_db(clean_table):
+    test_file='data/invoice_today.csv'
+    test_table= 'expenses'
+    response = populate_db(csv_file_path=test_file, table_name=test_table)
+    rows = clean_table.run(f"SELECT * FROM {test_table}")
+    assert response == rows
+    assert len(response) == 2
+    
+
 def test_populate_db_raise_exception():
     test_table_name = 'expenses'
     with pytest.raises(Exception) as e:
         populate_db(csv_file_path='',table_name=test_table_name)
     assert 'File Not Found' in str(e)
+   
     
 
 @patch('backend.parse.db_connection') 
