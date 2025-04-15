@@ -12,9 +12,6 @@ def reset_db():
          conn.run(f"""
                  TRUNCATE expenses;
                 """)
-         conn.run(f"""
-                 DELETE FROM expenses;
-                """)
                 
          yield conn
     finally:
@@ -63,20 +60,30 @@ class TestPut:
 
 
     def test_put_new_expenses_return_new_added_invoice(self,reset_db,test_client):
-        test_invoice = 'data/invoice01.csv'
+        test_invoice = 'data/invoice_today.csv'
         test_table_name = 'expenses'
         with open(test_invoice,'rb') as f:
             response = test_client.put(f"/api/expenses/upload?table_name={test_table_name}",
                                        files={'path_to_csv':(test_invoice,f,"text/csv")})
            
-        response_decoded = response.json()['New_invoice_added']
+        response_decoded = response.json()
+        
+        expected_items= {'New_invoice_added': 
+                         [{'amount': -109.99,
+                        'category': 'Shopping',
+                        'date': '2025-03-18',
+                        'description': 'Waterstone'},
+                       {'amount': -302.78,
+                        'category': 'Shopping',
+                        'date': '2024-02-19',
+                        'description': 'IKEA'}]}
+    
 
-        assert all('expense_id' in item for item in response_decoded)
-        assert all('date' in item for item in response_decoded)
-        assert all('description' in item for item in response_decoded)
-        assert all('amount' in item for item in response_decoded)
-        assert all('category' in item for item in response_decoded)
-        assert all('created_at' in item for item in response_decoded)
+        assert response_decoded == expected_items
+
+    
+
+        
     
 
 
