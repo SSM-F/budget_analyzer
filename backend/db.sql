@@ -11,9 +11,6 @@ GRANT ALL PRIVILEGES ON DATABASE expenses_vs_budget TO %{PGUSER};
 
 \c expenses_vs_budget
 
-
-
-
 CREATE TABLE expenses(
     expense_id SERIAL PRIMARY KEY,
     date DATE NOT NULL,
@@ -28,7 +25,7 @@ GRANT ALL PRIVILEGES ON TABLE expenses TO budget_user;
 GRANT USAGE, SELECT ON SEQUENCE expenses_expense_id_seq TO budget_user;
 GRANT UPDATE ON SEQUENCE expenses_expense_id_seq TO budget_user;
 ALTER SEQUENCE expenses_expense_id_seq OWNED BY budget_user;
-
+ALTER TABLE expenses ADD CONSTARINT unique_expenses UNIQUE (date,description,amount,category);
 
 
 
