@@ -1,59 +1,62 @@
-from backend.read_csv import read_csv
+from backend.file_readers.read_csv import read_csv
+from backend.file_readers.read_json import read_json
 from backend.db_conn import db_connection, close_conn
 import logging
 from pprint import pprint
 from pg8000.exceptions import DatabaseError
 from fastapi import HTTPException
-def populate_db(csv_file_path,table_name):
+def populate_db(file_path,table_name):
     newly_inserted = []
     conn = None
-    if csv_file_path.endswith("csv"):
-    
-        try: 
+    data = None
+    try: 
+        conn=db_connection()
 
-            conn=db_connection()
-            data = read_csv(csv_file_path)
-            rows = data['Invoice_Data']
-            check_query = f"""
-                    SELECT 1 FROM {table_name}
-                    WHERE date=:date AND description=:description
-                    AND amount=:amount AND category=:category
-                    LIMIT 1;
-                    """
-            insert_query = f'''
-                    INSERT INTO {table_name}
-                    (date,description,amount,category)
-                    VALUES (:date,:description,:amount,:category);
+        if file_path.endswith("csv"):
+            data = read_csv(file_path)
+        if file_path.endswith("json"):
+            data = read_json(file_path)
 
-                    '''
-            row_count = 0
-            
-            for row in rows:
-                exists = conn.run(check_query,
-                         date=row['Date'],
-                         description=row['Description'],
-                         amount=row['Amount'],
-                         category = row['Category'])
-                if not exists:
-                    inserted = conn.run(insert_query,
-                         date=row['Date'],
-                         description=row['Description'],
-                         amount=row['Amount'],
-                         category = row['Category'])
-                    
-                    newly_inserted.append(inserted)
-                
-                
-
-                row_count += 1
-            logging.info(f"Successfully added {row_count} rows to table {table_name}" )
-            query = f"SELECT * FROM {table_name}"
-            return conn.run(query)
-
-        finally:
-            if conn is not None:
-                close_conn(conn)
-    else:
-        raise Exception('File Not Found')
+        rows = data['Invoice_Data']
+        check_query = f"""
+                SELECT 1 FROM {table_name}
+                WHERE date=:date AND description=:description
+                AND amount=:amount AND category=:category
+                LIMIT 1;
+                """
+        insert_query = f'''
+                INSERT INTO {table_name}
+                (date,description,amount,category)
+                VALUES (:date,:description,:amount,:category);
+                '''
+        
+        row_count = 0
+        for row in rows:
+            exists = conn.run(check_query,
+                     date=row['Date'],
+                     description=row['Description'],
+                     amount=row['Amount'],
+                     category = row['Category'])
+            if not exists:
+                inserted = conn.run(insert_query,
+                     date=row['Date'],
+                     description=row['Description'],
+                     amount=row['Amount'],
+                     category = row['Category'])
+                newly_inserted.append(inserted)
+            row_count += 1
+        logging.info(f"Successfully added {row_count} rows to table {table_name}" )
+        query = f"SELECT * FROM {table_name}"
+        return conn.run(query)
+    except:
+        acceptable_files = ['json','csv']
+        if file_path is None or not file_path.endswith(tuple(acceptable_files)):
+            raise Exception("Wrong file type or path not found")
+        
+    finally:
+        
+        if conn is not None:
+            close_conn(conn)
+        
 
 
