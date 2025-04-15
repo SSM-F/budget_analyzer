@@ -53,7 +53,7 @@ class TestPut:
         with open(test_invoice, 'rb') as f:
             response = test_client.put(
                 f"/api/expenses/upload?table_name={test_table_name}",
-                files={'path_to_csv': (test_invoice, f, 'text/csv')})
+                files={'file_path': (test_invoice, f, 'text/csv')})
            
         assert response.status_code == 201
         
@@ -64,7 +64,7 @@ class TestPut:
         test_table_name = 'expenses'
         with open(test_invoice,'rb') as f:
             response = test_client.put(f"/api/expenses/upload?table_name={test_table_name}",
-                                       files={'path_to_csv':(test_invoice,f,"text/csv")})
+                                       files={'file_path':(test_invoice,f,"text/csv")})
            
         response_decoded = response.json()
         
@@ -78,8 +78,29 @@ class TestPut:
                         'date': '2024-02-19',
                         'description': 'IKEA'}]}
     
-
         assert response_decoded == expected_items
+
+    def test_put_endpoint_works_with_json_files(self,reset_db,test_client):
+        test_invoice = 'data/invoice_holidays.json'
+        test_table = 'expenses'
+        with open(test_invoice,'rb') as f:
+            response = test_client.put(f'/api/expenses/upload?table_name={test_table}',
+                                       files={'file_path':(test_invoice,f,'text/json')})
+        response_decoded = response.json()
+        expected = {'New_invoice_added': [
+                       {'amount': -350.0,
+                        'category': 'Holiday',
+                        'date': '2025-07-15',
+                        'description': 'Airbnb - Barcelona trip'},
+                       {'amount': -180.75,
+                        'category': 'Holiday',
+                        'date': '2025-07-16',
+                        'description': 'Flight to Barcelona'},
+                       {'amount': -25.0,
+                        'category': 'Holiday',
+                        'date': '2025-07-18',
+                        'description': 'Sagrada Familia tickets'}]}
+        assert expected == response_decoded
 
     
 

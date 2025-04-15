@@ -6,10 +6,10 @@ def test_read_json_reads_and_parse_file():
     test_input = 'data/invoice_holidays.json'
     response = read_json(test_input)
     assert response['Invoice_Data'][0] == {
-                                          'amount': -350.0,
-                                          'category': 'Holiday',
-                                          'date': '2025-07-15',
-                                          'description': 'Airbnb - Barcelona trip',
+                                          'Amount': -350.0,
+                                          'Category': 'Holiday',
+                                          'Date': '2025-07-15',
+                                          'Description': 'Airbnb - Barcelona trip',
                                            }
     
 def test_read_json_raise_exception_if_wrong_file_format_passed():
