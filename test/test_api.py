@@ -24,11 +24,13 @@ def test_client():
 
 class TestGet:
     def test_server_runs(self,reset_db,test_client):
-        response = test_client.get('/api/expenses')
+        table = 'expenses'
+        response = test_client.get(f'/api/summary/{table}')
         assert response.status_code == 200
 
     def test_server_returns_expenses_info(self,reset_db,test_client):
-        response = test_client.get('/api/expenses')
+        table = 'expenses'
+        response = test_client.get(f'/api/summary/{table}')
         response_decoded = response.json()['Detailed_expenses']
         for dic in response_decoded:
             assert 'amount' in dic
@@ -52,7 +54,7 @@ class TestPut:
         test_table_name = 'expenses'
         with open(test_invoice, 'rb') as f:
             response = test_client.put(
-                f"/api/expenses/upload?table_name={test_table_name}",
+                f"/api/upload?table_name={test_table_name}",
                 files={'file_path': (test_invoice, f, 'text/csv')})
            
         assert response.status_code == 201
@@ -63,7 +65,7 @@ class TestPut:
         test_invoice = 'data/invoice_today.csv'
         test_table_name = 'expenses'
         with open(test_invoice,'rb') as f:
-            response = test_client.put(f"/api/expenses/upload?table_name={test_table_name}",
+            response = test_client.put(f"/api/upload?table_name={test_table_name}",
                                        files={'file_path':(test_invoice,f,"text/csv")})
            
         response_decoded = response.json()
@@ -86,7 +88,7 @@ class TestPut:
         test_invoice = 'data/invoice_holidays.json'
         test_table = 'expenses'
         with open(test_invoice,'rb') as f:
-            response = test_client.put(f'/api/expenses/upload?table_name={test_table}',
+            response = test_client.put(f'/api/upload?table_name={test_table}',
                                        files={'file_path':(test_invoice,f,'text/json')})
         response_decoded = response.json()
         expected = {'New_invoice_added': [
@@ -107,6 +109,31 @@ class TestPut:
                         'id': 103
                         }]}
         assert expected == response_decoded
+
+class TestDelete:
+    def test_endpoint_delete_status_code(self,reset_db,test_client):
+        test_id= 1
+        test_table = 'expenses'
+        response = test_client.delete(f'/api/delete/{test_table}/{test_id}')
+        assert response.status_code == 200
+
+    def test_endpoint_delete_remove_item_from_database(self,reset_db,test_client):
+        test_id= 101
+        test_table = 'expenses'
+        test_invoice = 'data/invoice_holidays.json'
+        with open(test_invoice,'rb') as f:
+            response_put = test_client.put(f'/api/upload?table_name={test_table}',
+                                           files={'file_path':(test_invoice,f,'text/json')})
+        response_put_decoded = response_put.json()['New_invoice_added']
+        response = test_client.delete(f'/api/delete/{test_table}/{test_id}')
+        response_decoded = response.json()
+        assert response_decoded not in response_put_decoded
+        assert response_decoded == {'Invoice_deleted': [{'amount': -350.0,
+                                                        'category': 'Holiday',
+                                                        'date': '2025-07-15',
+                                                        'description': 'Airbnb - Barcelona trip',
+                                                        'id': 101},]}
+
 
     
 
