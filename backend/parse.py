@@ -16,7 +16,7 @@ def populate_db(file_path,table_name):
             data = read_csv(file_path)
         if file_path.endswith("json"):
             data = read_json(file_path)
-
+        
         rows = data['Invoice_Data']
         check_query = f"""
                 SELECT 1 FROM {table_name}
