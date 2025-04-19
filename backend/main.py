@@ -7,6 +7,7 @@ from backend.parse import populate_db
 import tempfile
 import shutil
 from pprint import pprint
+import os
 
 
 
@@ -35,16 +36,23 @@ def put_new_expense(file_path : UploadFile = File(...),table_name: str = Query(.
         conn= db_connection()
         if file_path.filename.endswith('csv'):
             temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'csv')
-        if file_path.filename.endswith('json'):
+        elif file_path.filename.endswith('json'):
             temp = tempfile.NamedTemporaryFile(delete=False, suffix = 'json')
+        else:
+            raise HTTPException(
+                status_code=415,
+                detail='Unsuported file'
+            )
+           
+        
         
         with temp as t:
             shutil.copyfileobj(file_path.file, t)
             t_path = t.name
         new_data = populate_db(file_path=t_path,table_name=table_name)
         
-        
         data_inserted=return_data(t_path)
+        
         result = {'New_invoice_added': []}
         
         for data in data_inserted:
@@ -56,14 +64,15 @@ def put_new_expense(file_path : UploadFile = File(...),table_name: str = Query(.
                     'category': data[4]}
             result['New_invoice_added'].append(base)
         
+        
             
         return result
-    except DatabaseError:
-        raise HTTPException(status_code=404,
-                            detail='Invoice already added or wrong format')
+    
     finally:
         if conn is not None:
             close_conn(conn)
+        if temp is not None:
+            os.unlink(temp.name)
 
 
 @app.delete('/api/delete/{table}/{id}',status_code=200)
@@ -72,15 +81,22 @@ def delete_data(table: str,
     conn = None
     try:
         conn= db_connection()
+            
         query = f"""
                 DELETE FROM {table}
                 WHERE id=:id
                 RETURNING id,date,description,amount,category;
                 """
         response = conn.run(query, id=id)
-        
+        if not response:
+            raise HTTPException(
+                    status_code=404,
+                    detail=f"Invoice with id number: {id} not found. Please try different id number")
         columns = ['id', 'date', 'description', 'amount', 'category']
         formated = formated_data(columns=columns,raw_data=response)
+        
+        
+
         return {'Invoice_deleted':formated}
     finally:
         if conn is not None:
