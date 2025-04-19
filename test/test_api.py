@@ -47,6 +47,11 @@ class TestGet:
                                         'date': '2025-03-01',
                                         'description': 'Starbucks Coffee',
                                         'expense_id': 621}
+            
+    def test_server_raise_HTTPException(self,reset_db,test_client):
+        response = test_client.get('/api/summary/not_a_table')
+        assert response.status_code == 404
+        assert response.json()['detail'] == 'Table does not exists'
     
 class TestPut:
 
