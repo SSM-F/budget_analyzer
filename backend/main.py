@@ -18,11 +18,18 @@ def get_expenses_info(table: str ):
     conn = None
     try:
         conn= db_connection()
-        query = f"SELECT * FROM {table};"
-        raw_data = conn.run(query)
-        columns = [col['name'] for col in conn.columns]
-        formated_expenses = formated_data(raw_data=raw_data,columns=columns)
-        return {'Detailed_expenses': formated_expenses}
+        try:
+            query = f"SELECT * FROM {table};"
+            raw_data = conn.run(query)
+            columns = [col['name'] for col in conn.columns]
+            formated_expenses = formated_data(raw_data=raw_data,columns=columns)
+
+            return {'Detailed_expenses': formated_expenses}
+        except DatabaseError:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Table does not exists"
+                )
     finally:
         if conn is not None:
             close_conn(conn)
